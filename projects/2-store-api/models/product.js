@@ -1,18 +1,18 @@
+
 const mongoose = require('mongoose')
 
 const productSchema = new mongoose.Schema({
     name: {
         type: String,
-        required: [true, 'product name must be provided']
+        required: [true, 'product name must be provided'],
     },
     price: {
         type: Number,
-        required: [true, 'product price must be provided']
+        required: [true, 'product price must be provided'],
     },
     featured: {
         type: Boolean,
         default: false,
-
     },
     rating: {
         type: Number,
@@ -20,16 +20,16 @@ const productSchema = new mongoose.Schema({
     },
     createdAt: {
         type: Date,
-        default: Date.now()
+        default: Date.now(),
     },
-    // I will make this in such a way that you can only provide certain companies
     company: {
         type: String,
-        // enum: ['ikea', 'liddy', 'caressa', 'marcos'] //note
         enum: {
-            value: ['ikea', 'liddy', 'caressa', 'marcos'],
-            message: '{VALUE} is not supported'
-        }
-    }
+            values: ['ikea', 'liddy', 'caressa', 'marcos'],
+            message: '{VALUE} is not supported',
+        },
+        // enum: ['ikea', 'liddy', 'caressa', 'marcos'],
+    },
 })
+
 module.exports = mongoose.model('Product', productSchema)
