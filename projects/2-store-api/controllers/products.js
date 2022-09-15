@@ -32,10 +32,17 @@ const getAllProducts = async (req, res) => {
         const regEx = /\b(<|>|>=|=|<|<=)\b/g;  // you can find these on stack overflow
         // if regEx matches any user friendly operators get the mongoose operator from operatorMap
         let filters = numericFilters.replace(regEx, (match) => `-${operatorMap[match]}-`)
-        console.log(filters);
+        // Now we can do this only on certain properties (price, rating)
+        const options = ['price', 'rating']
+        // for multiple we will split first
+        filters = filters.split(',').forEach((item) => {
+            // splitting into array
+            const [field, operator, value] = item.split('-')
+            if (options.includes(field)) {
+                queryObject[field] = { [operator]: Number(value) } //{price : {$gt : 30}} -> example
+            }
+        })
     }
-
-
     let result = Product.find(queryObject);
     if (sort) {
         const sortList = sort.split(',').join(' ') //for name,-company etc
@@ -52,7 +59,7 @@ const getAllProducts = async (req, res) => {
     const limit = Number(req.query.limit) || 10
     const skip = (page - 1) * limit;
     result = result.skip(skip).limit(limit)
-    /* explaining login
+    /* explaining logic
     Imagine you have 23 items => 4 pages => distributed like 7 7 7 2
     By default we have 1 as page so skip will be 0 => skip 0 items and limit to  7
     In 2nd page => skip = (2-1)*7 = 7 => so skip 7 items and have limit of 7
